@@ -26,11 +26,11 @@ public class Anime implements Commentable {
 	@Column(nullable = false )
 	private String autorDaObra;
 		
-	@ManyToMany @Column(nullable = true )
+	@ManyToMany( targetEntity = Usuario.class )
 	private List<Usuario> admin;
-	@ManyToOne @Column(nullable = true )
+	@ManyToOne ( targetEntity = Comentario.class )
 	private List<Comentario> comentarios;	// por enquanto é nullable	
-	@ManyToOne @Column(nullable = true )
+	@ManyToOne ( targetEntity = Personagem.class )
 	private List<Personagem> personagems;
 		
 	

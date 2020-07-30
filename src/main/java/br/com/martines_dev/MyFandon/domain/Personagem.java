@@ -23,7 +23,7 @@ public class Personagem implements Commentable {
 	private String ator;
 	
 	
-	@ManyToOne @Column(nullable = true )
+	@ManyToOne(targetEntity = Comentario.class)
 	private List<Comentario> comentarios;
 	
 	public Long getId() {
