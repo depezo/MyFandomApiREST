@@ -16,6 +16,9 @@ public class Categoria {
 	@Column(unique = true, nullable = false)
 	private String nome;
 	
+	public Categoria() {
+		
+	}
 	
 	public Categoria(Long id, String nome) {
 		super();

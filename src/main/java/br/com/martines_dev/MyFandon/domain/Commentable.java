@@ -4,6 +4,6 @@ import java.util.List;
 
 public interface Commentable {
 
-	List<Comentario> getCommentario();
-	void setComentario( List<Comentario> comentario);
+	List<Comentario> getComentarios();
+	void setComentarios( List<Comentario> comentario);
 }

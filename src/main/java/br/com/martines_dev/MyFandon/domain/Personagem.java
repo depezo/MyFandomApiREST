@@ -4,13 +4,14 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 
 @Entity
-public class Personagem implements Commentable {
+public class Personagem   {
 
 	@Id()
 	@GeneratedValue(strategy = GenerationType.IDENTITY )
@@ -22,8 +23,25 @@ public class Personagem implements Commentable {
 	private String historia;
 	private String ator;
 	
+	public Personagem() {
+		
+	}
 	
-	@ManyToOne(targetEntity = Comentario.class)
+	
+	public Personagem(Long id, String nome, String idade, String descricao, String historia, String ator,
+			List<Comentario> comentarios) {
+		super();
+		this.id = id;
+		this.nome = nome;
+		this.idade = idade;
+		this.descricao = descricao;
+		this.historia = historia;
+		this.ator = ator;
+		this.comentarios = comentarios;
+	}
+
+
+	@ManyToOne(targetEntity = Comentario.class , fetch = FetchType.EAGER)
 	private List<Comentario> comentarios;
 	
 	public Long getId() {
@@ -62,13 +80,13 @@ public class Personagem implements Commentable {
 	public void setAtor(String ator) {
 		this.ator = ator;
 	}
-	@Override
-	public List<Comentario> getCommentario() {
+	 
+	public List<Comentario> getComentarios() {
 
 		return comentarios;
 	}
-	@Override
-	public void setComentario(List<Comentario> comentarios) {
+	 
+	public void setComentarios(List<Comentario> comentarios) {
 		
 		this.comentarios = comentarios;
 	}
