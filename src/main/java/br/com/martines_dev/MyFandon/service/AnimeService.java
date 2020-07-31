@@ -6,6 +6,7 @@ import java.util.Optional;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ import br.com.martines_dev.MyFandon.domain.Personagem;
 import br.com.martines_dev.MyFandon.domain.Usuario;
 import br.com.martines_dev.MyFandon.persistence.AnimePersistence;
 import br.com.martines_dev.MyFandon.persistence.ComentarioPersistence;
+import br.com.martines_dev.MyFandon.persistence.PersonagemPersistence;
 import br.com.martines_dev.MyFandon.persistence.UsuarioPersistence;
 import br.com.martines_dev.MyFandon.service.interfaces.AnimeServiceInterface;
 
@@ -30,7 +32,8 @@ public class AnimeService implements AnimeServiceInterface{
 	UsuarioPersistence usuarioDAO;
 	@Autowired
 	ComentarioPersistence comentarioDAO;
-	
+	@Autowired
+	PersonagemPersistence personagemDAO;
 	@Override
 	@Transactional
 	public Anime inserir(Anime anime) {
@@ -74,11 +77,11 @@ public class AnimeService implements AnimeServiceInterface{
 	}
 
 	@Override
-	public List<Anime> listar(int page ) {
+	public Page<Anime> listar(int page ) {
 		
 		
 		Pageable pageable = PageRequest.of( page , QTD_ANIMES_POR_PAGINA);
-		return animeDAO.findAll( pageable ).toList();
+		return animeDAO.findAll( pageable );
 	}
 	
 	@Override
@@ -87,11 +90,28 @@ public class AnimeService implements AnimeServiceInterface{
 
 		Anime encontrado = this.pegarUm ( anime.getId() );
 		
-		encontrado.getPersonagems().add( personagem );
+		Personagem personagemAdicionado = personagemDAO.save( personagem );
+		encontrado.getPersonagems().add( personagemAdicionado );
 		
 		return personagem;
 	}
 
+	@Override
+	@Transactional
+	public void addPersonagem(Long animeId, Personagem personagem) {
+		
+		Optional<Anime> animeFounded = animeDAO.findById( animeId );
+		
+		if( animeFounded.isPresent() ) 
+		{
+			Personagem personagemAdicionado = personagemDAO.save( personagem );
+			animeFounded.get().getPersonagems().add( personagemAdicionado );
+		}else {
+			throw new RuntimeException("Anime não encontrado");
+		}
+		
+	}
+	
 	@Override
 	@Transactional
 	public Anime pegarUm(Long id) {
@@ -126,17 +146,7 @@ public class AnimeService implements AnimeServiceInterface{
 	}
 
 
-	@Override
-	public void addPersonagem(Long animeId, Personagem personagem) {
-		
-		Optional<Anime> animeFounded = animeDAO.findById( animeId );
-		
-		if( animeFounded.isPresent() ) 
-		{
-			animeFounded.get().getPersonagems().add(personagem);
-		}
-		
-	}
+	
 
 
 

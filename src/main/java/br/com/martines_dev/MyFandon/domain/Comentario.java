@@ -19,6 +19,7 @@ public class Comentario {
 	private String mensagem;
 	
 	@ManyToOne( fetch = FetchType.EAGER )
+	
 	private Usuario usuario;
 	
 	public Comentario(Long id, Usuario usuario) {

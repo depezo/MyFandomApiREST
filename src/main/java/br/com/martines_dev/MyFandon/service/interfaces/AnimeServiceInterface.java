@@ -13,8 +13,9 @@ public interface AnimeServiceInterface extends CrudServiceInterface<Anime,Long> 
 	
 	
 	Personagem addPersonagem( Anime anime, Personagem personagem );
+	void addPersonagem( Long animeId, Personagem personagem );
 	 
 	Comentario addComentario( Long animeId, Comentario comentario );
-	void addPersonagem( Long animeId, Personagem personagem );
+
 	
 }

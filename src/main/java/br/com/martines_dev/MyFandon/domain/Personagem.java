@@ -1,5 +1,6 @@
 package br.com.martines_dev.MyFandon.domain;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -8,7 +9,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
 @Entity
 public class Personagem   {
@@ -41,7 +42,7 @@ public class Personagem   {
 	}
 
 
-	@ManyToOne(targetEntity = Comentario.class , fetch = FetchType.EAGER)
+	@OneToMany(targetEntity = Comentario.class , fetch = FetchType.EAGER)
 	private List<Comentario> comentarios;
 	
 	public Long getId() {
@@ -83,6 +84,9 @@ public class Personagem   {
 	 
 	public List<Comentario> getComentarios() {
 
+		if( comentarios == null) {
+			comentarios = new ArrayList<>();
+		}
 		return comentarios;
 	}
 	 

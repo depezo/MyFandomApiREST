@@ -31,7 +31,8 @@ public class Anime {//implements Commentable
 	private String descricao;
 	@Column(nullable = false )
 	private String autorDaObra;
-		
+	
+	private String genero;		
 	
 	@ManyToMany( 
 		targetEntity = Usuario.class )
@@ -72,6 +73,14 @@ public class Anime {//implements Commentable
 		this.personagems = personagems;
 	}
 
+	public String getGenero() {
+		return genero;
+	}
+
+
+	public void setGenero(String genero) {
+		this.genero = genero;
+	}
 
 	public Long getId() {
 		return id;
