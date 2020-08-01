@@ -16,6 +16,8 @@ O aplicativo de fandom permite gerenciar uma fandom de anime, ou mangá. Nela é
  - Aplicação dividida em camadas: persistence, service, domain, application.
  - Testes de unidade e integração básico
  - Cobertura de código básico
+ - Aprender o Swagger para documentação de api.
+ - Operação com erros e exceptions.
 
 ### Entidades Importantes:
  - Anime
