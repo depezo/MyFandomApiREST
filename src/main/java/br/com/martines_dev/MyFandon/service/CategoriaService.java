@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import br.com.martines_dev.MyFandon.domain.Anime;
 import br.com.martines_dev.MyFandon.domain.Categoria;
+import br.com.martines_dev.MyFandon.exceptions.RecursoNaoEncontrado;
 import br.com.martines_dev.MyFandon.persistence.AnimePersistence;
 import br.com.martines_dev.MyFandon.persistence.CategoriaPersistence;
 import br.com.martines_dev.MyFandon.service.interfaces.CategoriaServiceInterface;
@@ -35,7 +36,8 @@ public class CategoriaService implements CategoriaServiceInterface {
 
 	@Override
 	public Categoria pegarUm(Long id) {
-		return categoriaDAO.getOne( id );
+		return categoriaDAO
+				  .getOne( id );
 	}
 
 	@Override
@@ -60,9 +62,10 @@ public class CategoriaService implements CategoriaServiceInterface {
 		if( animeFounded.isPresent()) {
 			
 			animeFounded.get().getCategorias().add( categoriaFounded.get() );
-			
 			animeDAO.save( animeFounded.get() );
-		}		
+		}else {
+			throw new RecursoNaoEncontrado( "Não foi possivel inserir um anime!" ); 
+		}
 		
 	}
 	

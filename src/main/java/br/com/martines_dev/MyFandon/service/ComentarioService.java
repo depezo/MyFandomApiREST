@@ -7,6 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import br.com.martines_dev.MyFandon.domain.Comentario;
+import br.com.martines_dev.MyFandon.exceptions.RecursoNaoEncontrado;
 import br.com.martines_dev.MyFandon.persistence.ComentarioPersistence;
 import br.com.martines_dev.MyFandon.service.interfaces.ComentarioServicoInterface;
 
@@ -21,7 +22,7 @@ public class ComentarioService implements ComentarioServicoInterface{
 	public Comentario inserir(Comentario comentario) {
 		
 		if( comentario.getUsuario() == null) {
-			throw new RuntimeException("Erro não é possivel inserir um comentario sem usuario");
+			throw new RecursoNaoEncontrado("Erro não é possivel inserir um comentario o usuario não existe");
 		}
 		return comentarioDAO.save( comentario );
 	}
@@ -30,7 +31,7 @@ public class ComentarioService implements ComentarioServicoInterface{
 	public Comentario atualizar(Comentario comentario, Long id) {
 		
 		if( comentario.getUsuario() == null) {
-			throw new RuntimeException("Erro não é possivel inserir um comentario sem usuario");
+			throw new RecursoNaoEncontrado("Erro não é possivel inserir um comentario sem usuario");
 		}
 		
 		return comentarioDAO.save( comentario );
@@ -38,7 +39,9 @@ public class ComentarioService implements ComentarioServicoInterface{
 
 	@Override
 	public Comentario pegarUm(Long id) {
-		return comentarioDAO.getOne( id );
+		return comentarioDAO.findById( id ).orElseGet( () -> {
+			throw new RecursoNaoEncontrado("Esse comentario não existe");
+		});
 	}
 
 	@Override

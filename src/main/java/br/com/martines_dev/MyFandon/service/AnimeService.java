@@ -15,6 +15,7 @@ import br.com.martines_dev.MyFandon.domain.Anime;
 import br.com.martines_dev.MyFandon.domain.Comentario;
 import br.com.martines_dev.MyFandon.domain.Personagem;
 import br.com.martines_dev.MyFandon.domain.Usuario;
+import br.com.martines_dev.MyFandon.exceptions.RecursoNaoEncontrado;
 import br.com.martines_dev.MyFandon.persistence.AnimePersistence;
 import br.com.martines_dev.MyFandon.persistence.ComentarioPersistence;
 import br.com.martines_dev.MyFandon.persistence.PersonagemPersistence;
@@ -41,7 +42,7 @@ public class AnimeService implements AnimeServiceInterface{
 		/*preciso verificar se esse if é necessario ou redundante pois
 		 * já coloquei uma validação no model Anime para o campo admin*/
 		if( anime.getAdmin().isEmpty() ) {
-			throw new RuntimeException("Erro não é possivel inserir um anime sem um usuário");
+			throw new RecursoNaoEncontrado("Erro não é possivel inserir um anime sem um usuário");
 		}
 		
 		return animeDAO.save(anime);
@@ -55,7 +56,7 @@ public class AnimeService implements AnimeServiceInterface{
 		Optional<Anime> founded = animeDAO.findById( id );
 		
 		if( !founded.isPresent() ) {
-			throw new RuntimeException("Erro não é possivel inserir um anime que não foi encontrado");
+			throw new RecursoNaoEncontrado("Erro não é possivel inserir um anime que não foi encontrado");
 		}
 		
 		return animeDAO.save( anime );
@@ -86,6 +87,7 @@ public class AnimeService implements AnimeServiceInterface{
 	
 	@Override
 	@Transactional
+	@Deprecated
 	public Personagem addPersonagem(Anime anime , Personagem personagem) {
 
 		Anime encontrado = this.pegarUm ( anime.getId() );
@@ -107,7 +109,7 @@ public class AnimeService implements AnimeServiceInterface{
 			Personagem personagemAdicionado = personagemDAO.save( personagem );
 			animeFounded.get().getPersonagems().add( personagemAdicionado );
 		}else {
-			throw new RuntimeException("Anime não encontrado");
+			throw new RecursoNaoEncontrado("Anime não encontrado");
 		}
 		
 	}
@@ -115,8 +117,12 @@ public class AnimeService implements AnimeServiceInterface{
 	@Override
 	@Transactional
 	public Anime pegarUm(Long id) {
-		 
-		return animeDAO.getOne( id );
+		
+		return animeDAO
+		  .findById(id)
+		  .orElseThrow( () -> { 
+			  throw new RecursoNaoEncontrado("anime não encontrado");  
+		  });
 	}
 
 
@@ -135,13 +141,13 @@ public class AnimeService implements AnimeServiceInterface{
 		if( animeFounded.isPresent() && usuarioFounded.isPresent() ) 
 		{
 			comentario.setUsuario( usuarioFounded.get() );
-			
 			Comentario novoComentario = comentarioDAO.save( comentario );
 			animeFounded.get().getComentarios().add( novoComentario );
+			
 			return novoComentario;
 		}
 		else {
-			throw new RuntimeException("Erro usuario ou anime invalido");
+			throw new RecursoNaoEncontrado("Erro usuario ou anime invalido");
 		}
 	}
 

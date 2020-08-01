@@ -3,7 +3,6 @@ package br.com.martines_dev.MyFandon.service;
 import java.util.List;
 import java.util.Optional;
 
-import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +14,7 @@ import org.springframework.stereotype.Service;
 import br.com.martines_dev.MyFandon.domain.Anime;
 import br.com.martines_dev.MyFandon.domain.Comentario;
 import br.com.martines_dev.MyFandon.domain.Personagem;
+import br.com.martines_dev.MyFandon.exceptions.RecursoNaoEncontrado;
 import br.com.martines_dev.MyFandon.persistence.AnimePersistence;
 import br.com.martines_dev.MyFandon.persistence.ComentarioPersistence;
 import br.com.martines_dev.MyFandon.persistence.PersonagemPersistence;
@@ -49,7 +49,7 @@ public class PersonagemService implements PersonagemServiceInterface {
 			anime.get().getPersonagems().add(personagem);
 			animeDAO.save( anime.get() );			
 		}else {
-			throw new RuntimeException("Não é possivel adicionar um personagem ao anime que não existe");
+			throw new RecursoNaoEncontrado("Não é possivel adicionar um personagem ao anime que não existe");
 		}
 		
 		return novoPersonagem;
@@ -61,7 +61,7 @@ public class PersonagemService implements PersonagemServiceInterface {
 		Optional<Personagem> founded = personagemDAO.findById( id );
 		
 		if( !founded.isPresent() ) {
-			throw new RuntimeException("Erro não é possivel inserir um anime que não foi encontrado");
+			throw new RecursoNaoEncontrado("Erro não é possivel inserir um anime que não foi encontrado");
 		}
 		
 		return personagemDAO.save( personagem );
@@ -72,9 +72,9 @@ public class PersonagemService implements PersonagemServiceInterface {
 		
 		
 		return personagemDAO.findById( id )
-				.orElseThrow( () -> {
-					throw new RuntimeException("recurso não encontrado");	
-				} );
+			.orElseThrow( () -> {
+			throw new RecursoNaoEncontrado("Personagem não encontrado!");	
+		} );
 	}
 
 	@Override
@@ -110,8 +110,9 @@ public class PersonagemService implements PersonagemServiceInterface {
 			
 			personagemDAO.save( personagem.get() );
 		}
+		
 		else {
-			throw new RuntimeException("Não é possivel inserir um comentario para um personagem que não existe");
+			throw new RecursoNaoEncontrado("Não é possivel inserir um comentario para um personagem que não existe");
 		}
 		
 	}
