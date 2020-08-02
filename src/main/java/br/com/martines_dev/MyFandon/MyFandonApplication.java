@@ -14,8 +14,15 @@ public class MyFandonApplication {
 		SpringApplication.run(MyFandonApplication.class, args);
 
 	}
+	
+//	@Override
+//	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+//	  return application.sources(MyFandonApplication.class);
+//	 }
+	 
 	@Bean
 	public static void Default() {
+		
 		
 		System.out.println( "Hello My Little Friend! ");
 	}

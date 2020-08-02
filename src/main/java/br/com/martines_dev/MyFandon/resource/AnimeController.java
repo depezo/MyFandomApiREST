@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.martines_dev.MyFandon.domain.Anime;
+import br.com.martines_dev.MyFandon.domain.Categoria;
 import br.com.martines_dev.MyFandon.domain.Comentario;
 import br.com.martines_dev.MyFandon.domain.Personagem;
 import br.com.martines_dev.MyFandon.service.interfaces.AnimeServiceInterface;
@@ -24,50 +25,67 @@ public class AnimeController {
 	
 	@Autowired
 	private AnimeServiceInterface animeService;
-	/*
-	 * ROTAS DELATIVAS AO ANIME
-	 **/
+
+	@GetMapping("api/anime")
+	public Page<Anime> listar( 
+		@RequestParam(name="page",defaultValue = "0") int id )  {
+		
+		return animeService.listar( id );
+	}
+	
 	@DeleteMapping("api/anime/{id}")
 	public void deletar( @PathVariable Long id ) 
 	{
 		animeService.deletar( id );
 	}
+	
+	
 	@PostMapping("api/anime")
 	public Anime inserir( @RequestBody Anime anime ) {
 		
 		return animeService.inserir( anime );
 	}
+	
+	
 	@PutMapping("api/anime/{id}")
 	public Anime atualizar( @PathVariable Long id , @RequestBody Anime anime ) {
 		
 		return animeService.atualizar( anime , id );
 	}
+	
+	
 	@GetMapping("api/anime/{id}")
 	public Anime verUm( @PathVariable Long id ) {
 		
 		return animeService.pegarUm( id );
 	}
-	@GetMapping("api/anime")
-	public Page<Anime>listar( 
-		@RequestParam(name="page",defaultValue = "0") int id  ) 
-	{
-		return animeService.listar( id );
-	}
+	
+	
+	
+	
+	
+	
+	@GetMapping("api/anime/{id}/categorias")
+	public List<Categoria> listarCategoriasDeUmAnime( 
+		@PathVariable Long id )  {
 		
-	/**
-	 * ROTAS RELATIVAS AO PERSONAGEM
-	 * */
-	@PostMapping("api/anime/{id}/inserirPersonagem")
-	public void registrarAnime( 
-		@PathVariable Long id,  @RequestBody Personagem personagem ) 
+		return animeService.getCategorias ( id );
+	}
+	
+	
+
+		
+
+	@PostMapping("api/anime/{id}/registrarPersonagem")
+	public void registrarPersonagem( 
+		@PathVariable Long id,  
+		@RequestBody Personagem personagem ) 
 	{
 		animeService.addPersonagem( id , personagem ) ;
 	}
 	
 	
-	/*
-	 * ROTAS RELATIVAS AO COMENTARIO
-	 **/
+
 	@PostMapping("api/anime/{id}/registrarComentario")
 	public Comentario registrarComentario( 
 		@PathVariable Long id,  @RequestBody Comentario comentario ) 
@@ -79,24 +97,6 @@ public class AnimeController {
 	@GetMapping("api/anime/{id}/comentarios")
 	public List<Comentario> pegarComentarios( @PathVariable Long id ) {
 		return animeService.pegarUm(id).getComentarios();
-	}
-	
-	/*
-	 * ROTAS RELATIVAS A CATEGORIA
-	 **/
-	@PostMapping("api/anime/{id}/registrarCategoria")
-	public String registrarCategoria(  ) {
-		
-		
-		return "registrar comentario";
-	}
-	@DeleteMapping("api/anime/{id}/deletarCategoria/{cid}")
-	public String deletarCategoria(  ) {
-		return "deletar comentario";
-	}
-	@GetMapping("api/anime/{id}/categorias")
-	public String pegarCategorias() {
-		return "comentarios";
 	}
 	
 	

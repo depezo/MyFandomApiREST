@@ -8,5 +8,4 @@ public interface CategoriaServiceInterface
 
 	void inserirAnime(Long idCategoria, Long idanime );
 
-	
 }

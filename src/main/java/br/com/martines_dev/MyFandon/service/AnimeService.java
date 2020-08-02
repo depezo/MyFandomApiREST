@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import br.com.martines_dev.MyFandon.domain.Anime;
+import br.com.martines_dev.MyFandon.domain.Categoria;
 import br.com.martines_dev.MyFandon.domain.Comentario;
 import br.com.martines_dev.MyFandon.domain.Personagem;
 import br.com.martines_dev.MyFandon.domain.Usuario;
@@ -120,9 +121,7 @@ public class AnimeService implements AnimeServiceInterface{
 		
 		return animeDAO
 		  .findById(id)
-		  .orElseThrow( () -> { 
-			  throw new RecursoNaoEncontrado("anime não encontrado");  
-		  });
+		  .orElseThrow( () -> new RecursoNaoEncontrado("anime não encontrado") );
 	}
 
 
@@ -149,6 +148,19 @@ public class AnimeService implements AnimeServiceInterface{
 		else {
 			throw new RecursoNaoEncontrado("Erro usuario ou anime invalido");
 		}
+	}
+
+
+	@Override
+	public List<Categoria> getCategorias(Long animeId) {
+
+		Anime animeFounded = animeDAO
+			.findById( animeId )
+			.orElseThrow( 
+				() -> new RecursoNaoEncontrado("Erro anime não encontrado") 
+			);
+		
+		return animeFounded.getCategorias();
 	}
 
 

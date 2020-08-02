@@ -39,9 +39,9 @@ public class ComentarioService implements ComentarioServicoInterface{
 
 	@Override
 	public Comentario pegarUm(Long id) {
-		return comentarioDAO.findById( id ).orElseGet( () -> {
-			throw new RecursoNaoEncontrado("Esse comentario não existe");
-		});
+		return comentarioDAO.findById( id ).orElseThrow( () -> 
+			new RecursoNaoEncontrado("Esse comentario não existe")
+		);
 	}
 
 	@Override

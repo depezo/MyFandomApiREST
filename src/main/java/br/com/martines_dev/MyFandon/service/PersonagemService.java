@@ -72,9 +72,8 @@ public class PersonagemService implements PersonagemServiceInterface {
 		
 		
 		return personagemDAO.findById( id )
-			.orElseThrow( () -> {
-			throw new RecursoNaoEncontrado("Personagem não encontrado!");	
-		} );
+			.orElseThrow( () -> new RecursoNaoEncontrado("Personagem não encontrado!")	
+		 );
 	}
 
 	@Override
@@ -97,8 +96,9 @@ public class PersonagemService implements PersonagemServiceInterface {
 		return personagemDAO.findAll( pageable );
 	}
 
+	
+
 	@Override
- 
 	public void addComentario(Long personagemId, Comentario comentario) {
 		
 		Optional<Personagem> personagem = personagemDAO.findById( personagemId );
@@ -115,6 +115,16 @@ public class PersonagemService implements PersonagemServiceInterface {
 			throw new RecursoNaoEncontrado("Não é possivel inserir um comentario para um personagem que não existe");
 		}
 		
+	}
+
+	@Override
+	public List<Comentario> getComentarios(Long PersonagemId) {
+		
+		Personagem personagem = personagemDAO
+			.findById( PersonagemId )
+			.orElseThrow( () -> new RecursoNaoEncontrado("Não existe esse personagem") );
+		
+		return personagem.getComentarios();
 	}
 	
 

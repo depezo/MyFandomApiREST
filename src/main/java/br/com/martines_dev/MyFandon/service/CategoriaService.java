@@ -69,8 +69,7 @@ public class CategoriaService implements CategoriaServiceInterface {
 		
 	}
 	
-	
-	
+
 	
 	
 	
@@ -88,6 +87,8 @@ public class CategoriaService implements CategoriaServiceInterface {
 		//categoriaDAO.findAll(pageable);
 		return null;
 	}
+
+
 	
 
 }

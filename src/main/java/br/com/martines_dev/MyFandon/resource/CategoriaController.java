@@ -58,7 +58,7 @@ public class CategoriaController {
 	 * ROTAS RELATIVAS A ANIME
 	 * **/
 	@GetMapping("api/categoria/{idCategoria}/inserirAnime/{idAnime}")
-	public String inserirAnime(
+	public String inserirAnimeNaCategoria(
 		@PathVariable Long idCategoria,
 		@PathVariable Long idAnime ) 
 	{
@@ -66,4 +66,6 @@ public class CategoriaController {
 		return "Anime inserido!";
 	}	
 	
+	
+
 }

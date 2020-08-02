@@ -67,9 +67,20 @@ public class PersonagemController implements CrudController<Personagem,Long>{
 		personagemService.addComentario( id , comentario ) ;
 	}
 
+	@GetMapping("api/personagem/{id}/comentarios")
+	public List<Comentario> pegarComentarios( @PathVariable Long id ) {
+				
+		return personagemService.getComentarios( id );
+	}
+	
+	/**abaixo não vale a pena olhar*/
 	
 	
-	@Deprecated
+	
+	
+	
+	
+	@Deprecated()
 	public List<Personagem> listar() {
 		// TODO Auto-generated method stub
 		return null;
