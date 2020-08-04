@@ -6,6 +6,7 @@ import java.util.Optional;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +17,7 @@ import br.com.martines_dev.MyFandon.domain.Categoria;
 import br.com.martines_dev.MyFandon.domain.Comentario;
 import br.com.martines_dev.MyFandon.domain.Personagem;
 import br.com.martines_dev.MyFandon.domain.Usuario;
+import br.com.martines_dev.MyFandon.exceptions.RecursoJaExiste;
 import br.com.martines_dev.MyFandon.exceptions.RecursoNaoEncontrado;
 import br.com.martines_dev.MyFandon.persistence.AnimePersistence;
 import br.com.martines_dev.MyFandon.persistence.ComentarioPersistence;
@@ -45,8 +47,19 @@ public class AnimeService implements AnimeServiceInterface{
 		if( anime.getAdmin().isEmpty() ) {
 			throw new RecursoNaoEncontrado("Erro não é possivel inserir um anime sem um usuário");
 		}
+		if( animeNaoEstarNoBancoDeDados(anime) ) {
+			return animeDAO.save(anime);	
+		}else {
+			throw new RecursoJaExiste("Erro: " + anime.getNome()+" já existe");
+		}
+				
+	}
+
+
+	private boolean animeNaoEstarNoBancoDeDados(Anime anime) {
+		List<Anime> animeLista = animeDAO.findByNome(anime.getNome() );
 		
-		return animeDAO.save(anime);
+		return animeLista.isEmpty();
 	}
 
 	
@@ -60,6 +73,7 @@ public class AnimeService implements AnimeServiceInterface{
 			throw new RecursoNaoEncontrado("Erro não é possivel inserir um anime que não foi encontrado");
 		}
 		
+		
 		return animeDAO.save( anime );
 		
 	}
@@ -68,8 +82,11 @@ public class AnimeService implements AnimeServiceInterface{
 	@Override
 	@Transactional
 	public void deletar(Long id) {
-		
-		animeDAO.deleteById( id );
+		try {			
+			animeDAO.deleteById( id );
+		}catch(EmptyResultDataAccessException ex) {
+			throw new RecursoNaoEncontrado("Anime nao existe: "+id);
+		}
 	}
 
 	@Override
@@ -86,18 +103,6 @@ public class AnimeService implements AnimeServiceInterface{
 		return animeDAO.findAll( pageable );
 	}
 	
-	@Override
-	@Transactional
-	@Deprecated
-	public Personagem addPersonagem(Anime anime , Personagem personagem) {
-
-		Anime encontrado = this.pegarUm ( anime.getId() );
-		
-		Personagem personagemAdicionado = personagemDAO.save( personagem );
-		encontrado.getPersonagems().add( personagemAdicionado );
-		
-		return personagem;
-	}
 
 	@Override
 	@Transactional

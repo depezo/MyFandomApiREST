@@ -45,7 +45,8 @@ public class Anime {//implements Commentable
 	
 	@OneToMany ( 
 		targetEntity = Comentario.class,
-		fetch = FetchType.LAZY )
+		fetch = FetchType.LAZY ,
+		cascade  = CascadeType.REMOVE )
 	private List<Comentario> comentarios;	// por enquanto é nullable
 	
 	@OneToMany ( 
@@ -60,8 +61,7 @@ public class Anime {//implements Commentable
 	}
 	
 	
-	public Anime(Long id, String nome, String resumo, String descricao, String autorDaObra, List<Usuario> admin,
-			List<Comentario> comentarios, List<Personagem> personagems) {
+	public Anime(Long id, String nome, String resumo, String descricao, String autorDaObra, List<Usuario> admin) {
 		super(); 
 		this.id = id;
 		this.nome = nome;
@@ -69,8 +69,6 @@ public class Anime {//implements Commentable
 		this.descricao = descricao;
 		this.autorDaObra = autorDaObra;
 		this.admin = admin;
-		this.comentarios = comentarios;
-		this.personagems = personagems;
 	}
 
 	public String getGenero() {
@@ -165,37 +163,4 @@ public class Anime {//implements Commentable
 	}
 	
 	
-	
-
-/*******************************
- * JUST SOME STUFF
- */
-	
-
-	
-	
-/*******************************
- * RELATIONAL
- *******************************/
-//	public List<Usuario> getAdmin() {
-//		return admin;
-//	}
-//	public void setAdmin(List<Usuario> admin) {
-//		this.admin = admin;
-//	}
-//	public List<Personagem> getPersonagems() {
-//		return personagems;
-//	}
-//	public void setPersonagems(List<Personagem> personagems) {
-//		this.personagems = personagems;
-//	}	
-	
-//	@Override
-//	public List<Comentario> getComentarios() {
-//		return comentarios;
-//	}
-//	@Override
-//	public void setComentarios(List<Comentario> comentarios) {
-//		this.comentarios = comentarios;
-//	}	
 }

@@ -6,6 +6,7 @@ import java.util.Optional;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -79,7 +80,11 @@ public class PersonagemService implements PersonagemServiceInterface {
 	@Override
 	public void deletar(Long id) {
 
-		personagemDAO.deleteById(id);
+		try {			
+			personagemDAO.deleteById( id );
+		}catch(EmptyResultDataAccessException ex) {
+			throw new RecursoNaoEncontrado("Personagem nao existe: "+id);
+		}
 	}
 
 	@Override

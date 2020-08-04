@@ -3,6 +3,7 @@ package br.com.martines_dev.MyFandon.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
@@ -47,7 +48,11 @@ public class ComentarioService implements ComentarioServicoInterface{
 	@Override
 	public void deletar(Long id) {
 		
-		comentarioDAO.deleteById( id );
+		try {			
+			comentarioDAO.deleteById( id );
+		}catch(EmptyResultDataAccessException ex) {
+			throw new RecursoNaoEncontrado("Comentario nao existe: "+id);
+		}
 	}
 
 	@Override
@@ -65,7 +70,6 @@ public class ComentarioService implements ComentarioServicoInterface{
 	@Deprecated
 	public Page<Comentario> listar(int page) {
 		
-		//categoriaDAO.findAll(pageable);
 		return null;
 	}
 	

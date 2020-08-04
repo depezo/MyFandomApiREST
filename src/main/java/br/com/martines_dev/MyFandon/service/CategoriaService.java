@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
@@ -43,7 +44,11 @@ public class CategoriaService implements CategoriaServiceInterface {
 	@Override
 	public void deletar(Long id) {
 		
-		categoriaDAO.deleteById( id );
+		try {			
+			categoriaDAO.deleteById( id );
+		}catch(EmptyResultDataAccessException ex) {
+			throw new RecursoNaoEncontrado("Categoria nao existe: "+id);
+		}
 	}
 
 	@Override
@@ -84,7 +89,6 @@ public class CategoriaService implements CategoriaServiceInterface {
 	@Deprecated
 	public Page<Categoria> listar(int page) {
 		
-		//categoriaDAO.findAll(pageable);
 		return null;
 	}
 

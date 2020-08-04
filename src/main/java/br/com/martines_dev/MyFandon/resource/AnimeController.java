@@ -17,6 +17,7 @@ import br.com.martines_dev.MyFandon.domain.Anime;
 import br.com.martines_dev.MyFandon.domain.Categoria;
 import br.com.martines_dev.MyFandon.domain.Comentario;
 import br.com.martines_dev.MyFandon.domain.Personagem;
+import br.com.martines_dev.MyFandon.exceptions.IdNaoConfereException;
 import br.com.martines_dev.MyFandon.service.interfaces.AnimeServiceInterface;
 
 @RestController
@@ -48,7 +49,12 @@ public class AnimeController {
 	
 	
 	@PutMapping("api/anime/{id}")
-	public Anime atualizar( @PathVariable Long id , @RequestBody Anime anime ) {
+	public Anime atualizar
+		( @PathVariable Long id , @RequestBody Anime anime ) {
+		
+ 		if( !anime.getId().equals(id)) {
+			throw new IdNaoConfereException(); 
+		}
 		
 		return animeService.atualizar( anime , id );
 	}
