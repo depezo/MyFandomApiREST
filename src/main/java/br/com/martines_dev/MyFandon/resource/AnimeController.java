@@ -1,9 +1,11 @@
 package br.com.martines_dev.MyFandon.resource;
 
+import java.security.Principal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.martines_dev.MyFandon.domain.Anime;
@@ -35,45 +38,46 @@ public class AnimeController {
 	}
 	
 	@DeleteMapping("api/anime/{id}")
-	public void deletar( @PathVariable Long id ) 
+	public void deletar( @PathVariable("id") Long id , Principal principal) 
 	{
-		animeService.deletar( id );
+		animeService.deletar( id , principal.getName() );
 	}
 	
 	
 	@PostMapping("api/anime")
-	public Anime inserir( @RequestBody Anime anime ) {
+	@ResponseStatus(HttpStatus.CREATED)
+	public Anime inserir( @RequestBody Anime anime , Principal principal) {
 		
-		return animeService.inserir( anime );
+		System.out.println(principal.getName());	
+		return animeService.inserir( anime , principal.getName() );
 	}
 	
 	
 	@PutMapping("api/anime/{id}")
 	public Anime atualizar
-		( @PathVariable Long id , @RequestBody Anime anime ) {
+				( @PathVariable("id") Long anime_id , 
+				  @RequestBody Anime anime , 
+				  Principal principal ) 
+	{
 		
- 		if( !anime.getId().equals(id)) {
+ 		if( !anime.getId().equals(anime_id)) {
 			throw new IdNaoConfereException(); 
 		}
 		
-		return animeService.atualizar( anime , id );
+		return animeService.atualizar( anime , principal.getName() );
 	}
 	
 	
 	@GetMapping("api/anime/{id}")
-	public Anime verUm( @PathVariable Long id ) {
+	public Anime verUm( @PathVariable("id") Long id ) {
 		
 		return animeService.pegarUm( id );
 	}
 	
 	
-	
-	
-	
-	
 	@GetMapping("api/anime/{id}/categorias")
 	public List<Categoria> listarCategoriasDeUmAnime( 
-		@PathVariable Long id )  {
+					@PathVariable("id") Long id )  {
 		
 		return animeService.getCategorias ( id );
 	}
@@ -83,25 +87,31 @@ public class AnimeController {
 		
 
 	@PostMapping("api/anime/{id}/registrarPersonagem")
+	@ResponseStatus(HttpStatus.CREATED)
 	public void registrarPersonagem( 
-		@PathVariable Long id,  
-		@RequestBody Personagem personagem ) 
+					@PathVariable("id") Long id,  
+					@RequestBody Personagem personagem ) 
 	{
 		animeService.addPersonagem( id , personagem ) ;
 	}
 	
 	
-
 	@PostMapping("api/anime/{id}/registrarComentario")
+	@ResponseStatus(HttpStatus.CREATED)
 	public Comentario registrarComentario( 
-		@PathVariable Long id,  @RequestBody Comentario comentario ) 
+					@PathVariable("id") Long id,  
+					@RequestBody Comentario comentario , 
+					Principal principal ) 
 	{
-		return animeService.addComentario( id , comentario ) ;
+			
+		return animeService.addComentario( id , comentario , principal.getName()) ;
 	}
 
 	
 	@GetMapping("api/anime/{id}/comentarios")
-	public List<Comentario> pegarComentarios( @PathVariable Long id ) {
+	public List<Comentario> pegarComentarios(
+						@PathVariable("id") Long id ) 
+	{
 		return animeService.pegarUm(id).getComentarios();
 	}
 	

@@ -6,6 +6,7 @@ public interface CategoriaServiceInterface
 	extends CrudServiceInterface<Categoria,Long>
 {
 
+	void inserirAnime(Long idCategoria, Long idanime , String nomeUsuario );
 	void inserirAnime(Long idCategoria, Long idanime );
 
 }

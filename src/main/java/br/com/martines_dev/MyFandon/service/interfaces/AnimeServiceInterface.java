@@ -16,8 +16,16 @@ public interface AnimeServiceInterface extends CrudServiceInterface<Anime,Long> 
 	
 	void addPersonagem( Long animeId, Personagem personagem );
 	 
-	Comentario addComentario( Long animeId, Comentario comentario );
+	Comentario addComentario( Long animeId, Comentario comentario , String nomeUsuario );
+	
 
 	List<Categoria> getCategorias(  Long animeId );
+
+	Anime inserir(Anime anime, String name);
+
+	void deletar(Long id, String nomeUsuario);
+
+	Anime atualizar(Anime anime, String nomeUsuario);
+
 	
 }

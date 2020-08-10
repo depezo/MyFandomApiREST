@@ -10,9 +10,10 @@ public interface PersonagemServiceInterface
 {	
 	Personagem inserir( Personagem personagem , Long id );
 
-	void addComentario(Long id, Comentario comentario);
 
 	List<Comentario> getComentarios(Long id);
+
+	void addComentario(Long id, Comentario comentario, String usuarioNome);
 	
 	
 }

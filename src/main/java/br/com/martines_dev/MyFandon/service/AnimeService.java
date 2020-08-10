@@ -1,5 +1,6 @@
 package br.com.martines_dev.MyFandon.service;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,6 +18,7 @@ import br.com.martines_dev.MyFandon.domain.Categoria;
 import br.com.martines_dev.MyFandon.domain.Comentario;
 import br.com.martines_dev.MyFandon.domain.Personagem;
 import br.com.martines_dev.MyFandon.domain.Usuario;
+import br.com.martines_dev.MyFandon.exceptions.ExceptionOAnimeTemOAdminInvalido;
 import br.com.martines_dev.MyFandon.exceptions.RecursoJaExiste;
 import br.com.martines_dev.MyFandon.exceptions.RecursoNaoEncontrado;
 import br.com.martines_dev.MyFandon.persistence.AnimePersistence;
@@ -38,15 +40,26 @@ public class AnimeService implements AnimeServiceInterface{
 	ComentarioPersistence comentarioDAO;
 	@Autowired
 	PersonagemPersistence personagemDAO;
+	
 	@Override
+	public Anime inserir( Anime anime , String nomeUsuario) {
+		
+		
+		Usuario usuario = pegarUsuarioPeloNome(nomeUsuario);
+		anime.setAdmin( Arrays.asList(  usuario ) );
+		
+		return inserir(anime);			
+	}
+	
+
 	@Transactional
+	/* *****************************************************
+	 * [----------DICA PARA O PROGRAMADOR----------]
+	 * use o método inserir(Anime anime ,String nome) acima para inserir o anime com o usuario, assim não corre o risco 
+	 * de ficar usuario nulo no banco de dados, e gerar inconsistencia*/
 	public Anime inserir(Anime anime) {
 	
-		/*preciso verificar se esse if é necessario ou redundante pois
-		 * já coloquei uma validação no model Anime para o campo admin*/
-		if( anime.getAdmin().isEmpty() ) {
-			throw new RecursoNaoEncontrado("Erro não é possivel inserir um anime sem um usuário");
-		}
+
 		if( animeNaoEstarNoBancoDeDados(anime) ) {
 			return animeDAO.save(anime);	
 		}else {
@@ -54,36 +67,93 @@ public class AnimeService implements AnimeServiceInterface{
 		}
 				
 	}
+	
+	
 
 
 	private boolean animeNaoEstarNoBancoDeDados(Anime anime) {
+		
 		List<Anime> animeLista = animeDAO.findByNome(anime.getNome() );
 		
 		return animeLista.isEmpty();
 	}
 
 	
+	
+	@Override
+	@Transactional
+	public Anime atualizar(Anime anime, String nomeUsuario) {
+		
+		Anime animeEncontrado = animeDAO.findById(anime.getId())
+				.orElseThrow( () -> new RecursoNaoEncontrado("Anime não foi encontrado"));
+			
+		
+		if ( ehUmDonoDoAnimeQuemEstaModificandoEle(anime.getId(), nomeUsuario) ) {
+
+			
+			anime.setAdmin( animeEncontrado.getAdmin() );
+			
+			return atualizar( anime , anime.getId() );
+		}else {
+			throw new ExceptionOAnimeTemOAdminInvalido("Erro você não é o dono desse anime");
+		}
+
+	}
+
+	/* *****************************************************
+	 * [----------DICA PARA O PROGRAMADOR----------]
+	 * use o método atualizar(Anime anime ,String nome) acima para atualizar o anime com o usuario, assim não corre o risco 
+	 * de ficar usuario nulo no banco de dados, e gerar inconsistencia*/
 	@Transactional
 	@Override
-	public Anime atualizar(Anime anime , Long id) {
-		
-		Optional<Anime> founded = animeDAO.findById( id );
-		
-		if( !founded.isPresent() ) {
-			throw new RecursoNaoEncontrado("Erro não é possivel inserir um anime que não foi encontrado");
-		}
-		
+	public Anime atualizar(Anime anime , Long animeId) {
 		
 		return animeDAO.save( anime );
-		
 	}
 	
+	
+
+
+
+	@Override
+	@Transactional
+	public void deletar(Long id,String usuarioNome) {
+		
+		usuarioDAO.findByUsername(usuarioNome).orElseThrow( () -> new RecursoNaoEncontrado("Usuario não encontrado") );
+		
+		
+		
+		if(ehUmDonoDoAnimeQuemEstaModificandoEle(id, usuarioNome))	{
+			deletar(id);	
+		}
+		else {			
+			throw new ExceptionOAnimeTemOAdminInvalido("Erro você não é o dono desse anime");
+		}
+		
+	}
+
+
+	private boolean ehUmDonoDoAnimeQuemEstaModificandoEle(Long idAnime, String usuarioNome)
+			throws RecursoNaoEncontrado {
+		Anime anime = animeDAO.findById(idAnime).orElseThrow(() -> new RecursoNaoEncontrado("Anime não existe")  );
+		
+		boolean validOperation = false;
+		
+		for( Usuario admin :anime.getAdmin() ) 
+		{
+			if( admin.getUsername().contentEquals( usuarioNome )) {
+				validOperation = true;	
+			}
+		}
+		return validOperation;
+	}
+
 
 	@Override
 	@Transactional
 	public void deletar(Long id) {
 		try {			
-			animeDAO.deleteById( id );
+			animeDAO.deleteById( id ) ;
 		}catch(EmptyResultDataAccessException ex) {
 			throw new RecursoNaoEncontrado("Anime nao existe: "+id);
 		}
@@ -108,16 +178,22 @@ public class AnimeService implements AnimeServiceInterface{
 	@Transactional
 	public void addPersonagem(Long animeId, Personagem personagem) {
 		
-		Optional<Anime> animeFounded = animeDAO.findById( animeId );
+		Anime animeFounded = animeDAO.findById( animeId )
+			.orElseThrow( 
+					() -> new RecursoNaoEncontrado("Anime não encontrado")
+			);
 		
-		if( animeFounded.isPresent() ) 
-		{
+		if ( !personagemDAO.findByNome( personagem.getNome()).isPresent() ) {
+			
 			Personagem personagemAdicionado = personagemDAO.save( personagem );
-			animeFounded.get().getPersonagems().add( personagemAdicionado );
+			personagemAdicionado.setAnime(animeFounded);
+			animeFounded.getPersonagems().add( personagemAdicionado );
+			
 		}else {
-			throw new RecursoNaoEncontrado("Anime não encontrado");
+			throw new RecursoJaExiste("Personagem já existe");
 		}
 		
+				
 	}
 	
 	@Override
@@ -132,27 +208,34 @@ public class AnimeService implements AnimeServiceInterface{
 
 	@Override
 	@Transactional
-	public Comentario addComentario(Long animeId, Comentario comentario) {
+	/**
+	 * na propriedade comentario é obrigatorio o nome do usuario
+	 * */
+	public Comentario addComentario(Long animeId, Comentario comentario, String nomeUsuario) {
 		
-		Optional<Anime> animeFounded = animeDAO.findById( animeId );
+		Optional<Anime> anime = animeDAO.findById( animeId );
 		
-		Optional<Usuario> usuarioFounded = usuarioDAO.findById(
-			comentario.getUsuario().getId()
-		);
-		
-		
-		
-		if( animeFounded.isPresent() && usuarioFounded.isPresent() ) 
-		{
-			comentario.setUsuario( usuarioFounded.get() );
-			Comentario novoComentario = comentarioDAO.save( comentario );
-			animeFounded.get().getComentarios().add( novoComentario );
-			
-			return novoComentario;
+		if( !anime.isPresent() ) {
+			throw new RecursoNaoEncontrado("Erro anime invalido");			
 		}
-		else {
-			throw new RecursoNaoEncontrado("Erro usuario ou anime invalido");
-		}
+		
+		
+		comentario.setUsuario( pegarUsuarioPeloNome(nomeUsuario) );
+		comentario.setAnime( anime.get() );
+		Comentario novoComentario = comentarioDAO.save( comentario );
+		
+		anime.get().getComentarios().add( novoComentario );
+		
+		return novoComentario;	
+	}
+	
+	/**
+	 * @exception lançar uma RecursoNaoEncontrado se o usuario não existir
+	 * */
+	private Usuario pegarUsuarioPeloNome(String nomeUsuario) throws RecursoNaoEncontrado 
+	{
+		return usuarioDAO.findByUsername( nomeUsuario )
+			 	.orElseThrow( () -> new RecursoNaoEncontrado("[Bug] Usuario que não existe está comentando") ) ;
 	}
 
 
@@ -161,19 +244,12 @@ public class AnimeService implements AnimeServiceInterface{
 
 		Anime animeFounded = animeDAO
 			.findById( animeId )
-			.orElseThrow( 
-				() -> new RecursoNaoEncontrado("Erro anime não encontrado") 
-			);
+			.orElseThrow(		() -> new RecursoNaoEncontrado("Erro anime não foi encontrado") );
 		
 		return animeFounded.getCategorias();
 	}
 
 
 	
-
-
-
-
-
 	
 }

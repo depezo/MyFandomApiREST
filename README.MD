@@ -1,6 +1,6 @@
 # Aplicativo de fandom
 ### Objetivo do aplicativo:
-O aplicativo de fandom permite gerenciar uma fandom de anime, ou mangá. Nela é possível se obter informações sobre animes, autores, personagens, fazer comentários, administrar usuários etc.
+   O aplicativo de fandom permite gerenciar uma fandom de anime, ou mangá. Nela é possível se obter informações sobre animes, autores, personagens, fazer comentários, administrar usuários etc.
 
 ## Objetivo do projeto:
  - Implementar uma api para aprendizado e consolidação das seguintes tecnologias e conceitos: 
@@ -31,25 +31,25 @@ O aplicativo de fandom permite gerenciar uma fandom de anime, ou mangá. Nela é
 
 # Controllers:
  - ### /usuario
- -  - [post]/usuario/cadastrar
- -  - [post]/usuario/logar
- -  - [post]/usuario/pegar_token
- -  - [get]/usuario/roles
+ -  [post]/usuario/cadastrar
+ -  [post]/usuario/logar
+ -  [post]/usuario/pegar_token
+ -  [get]/usuario/roles
  - ### /anime
- -  - [CRUD]
- -  - /anime/{123}/registrarComentario 
- -  - /anime/{123}/registrarPersonagem 
- -  - /anime/{123}/comentarios 
- -  - /anime/{123}/categorias 
- -  - /anime/?page={numero} 
+ -  [CRUD]
+ -  /anime/{123}/registrarComentario 
+ -  /anime/{123}/registrarPersonagem 
+ -  /anime/{123}/comentarios 
+ -  /anime/{123}/categorias 
+ -  /anime/?page={numero} 
  - ### /personagem
- - - [CRUD]
- - -  /personagem/{id_personagem:123}/registrarComentario 
- - - /personagem/{id_comentarios:123}/comentarios 
- -  - /personagem/?pagina={numero}
- -  ### /categoria
- -  - [crud]
- -  - /categoria/{id_categoria:123}/inserirAnime/{id_anime:123}
+ - [CRUD]
+ - /personagem/{id_personagem:123}/registrarComentario 
+ - /personagem/{id_comentarios:123}/comentarios 
+ - /personagem/?pagina={numero}
+ - ### /categoria
+ - [crud]
+ - /categoria/{id_categoria:123}/inserirAnime/{id_anime:123}
 
 
 ## Requisitos Funcionais da API:
@@ -59,7 +59,7 @@ O aplicativo de fandom permite gerenciar uma fandom de anime, ou mangá. Nela é
  - Regra de Negócio: O usuário pode deletar os próprios comentários, mas não pode deletar os comentários dos outros. 
  - Regra de Negócio: O usuário com permissão de administrador ou permissão de moderador pode deletar os comentários de outros usuários desde que ele seja o “criador” do registro do anime. 
  - Regra de Negócio: O usuário cadastrado pode criar animes, e sendo o dono desse anime ele pode delegar responsabilidades para outros usuários, como o direito de poder deletar ou atualizar um anime, e administrar comentários.
- - Regra de Negócio: O sistema deve evitar que um usuário não cadastrado possa inserir um anime e um personagem, mas deve permitir comentários. Uma mensagem de erro com o status bad request deve ser enviada para o cliente.
+ - Regra de Negócio: [atualizado 1]: O sistema deve evitar que um usuario <b>NÃO</b> cadastrado possa comentar.
  - O sistema deve: receber uma requisição REST para poder inserir/atualizar/deletar/listar/visualizar um anime. [ok]
  - O sistema deve: receber uma  requisição REST para poder inserir/atualizar/deletar/listar/visualizar uma categoria. [ok]
  - O sistema deve: receber uma  requisição REST para poder inserir/atualizar/deletar/listar/visualizar um(a) personagem. [ok]

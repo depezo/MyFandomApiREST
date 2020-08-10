@@ -15,10 +15,12 @@ import org.springframework.stereotype.Service;
 import br.com.martines_dev.MyFandon.domain.Anime;
 import br.com.martines_dev.MyFandon.domain.Comentario;
 import br.com.martines_dev.MyFandon.domain.Personagem;
+import br.com.martines_dev.MyFandon.domain.Usuario;
 import br.com.martines_dev.MyFandon.exceptions.RecursoNaoEncontrado;
 import br.com.martines_dev.MyFandon.persistence.AnimePersistence;
 import br.com.martines_dev.MyFandon.persistence.ComentarioPersistence;
 import br.com.martines_dev.MyFandon.persistence.PersonagemPersistence;
+import br.com.martines_dev.MyFandon.persistence.UsuarioPersistence;
 import br.com.martines_dev.MyFandon.service.interfaces.PersonagemServiceInterface;
 
 @Service
@@ -32,7 +34,8 @@ public class PersonagemService implements PersonagemServiceInterface {
 	AnimePersistence animeDAO;
 	@Autowired
 	ComentarioPersistence comentarioDAO;
-	
+	@Autowired
+	UsuarioPersistence usuarioDAO;
 	
 	@Override
 	public Personagem inserir(@NotNull Personagem personagem) {
@@ -48,6 +51,7 @@ public class PersonagemService implements PersonagemServiceInterface {
 		if( anime.isPresent() ) {
 			
 			anime.get().getPersonagems().add(personagem);
+
 			animeDAO.save( anime.get() );			
 		}else {
 			throw new RecursoNaoEncontrado("Não é possivel adicionar um personagem ao anime que não existe");
@@ -81,6 +85,7 @@ public class PersonagemService implements PersonagemServiceInterface {
 	public void deletar(Long id) {
 
 		try {			
+			
 			personagemDAO.deleteById( id );
 		}catch(EmptyResultDataAccessException ex) {
 			throw new RecursoNaoEncontrado("Personagem nao existe: "+id);
@@ -104,22 +109,26 @@ public class PersonagemService implements PersonagemServiceInterface {
 	
 
 	@Override
-	public void addComentario(Long personagemId, Comentario comentario) {
+	public void addComentario( 
+					Long personagemId, 
+					Comentario comentario , 
+					@NotNull String usuarioNome) {
 		
-		Optional<Personagem> personagem = personagemDAO.findById( personagemId );
+		Personagem personagem = personagemDAO.findById( personagemId )
+				.orElseThrow( () -> new RecursoNaoEncontrado("Não é possivel inserir um comentario para um personagem que não existe")  ) ;
 		
-		if( personagem.isPresent() ) {
-			
-			Comentario novoComentario = comentarioDAO.save( comentario );
-			personagem.get().getComentarios().add( novoComentario  );
-			
-			personagemDAO.save( personagem.get() );
-		}
+		Usuario usuario = usuarioDAO.findByUsername ( usuarioNome )
+				.orElseThrow( () -> new RecursoNaoEncontrado("Não é possivel inserir um comentario para um usuario que não existe")  ) ;
 		
-		else {
-			throw new RecursoNaoEncontrado("Não é possivel inserir um comentario para um personagem que não existe");
-		}
 		
+		comentario.setUsuario( usuario );
+		comentario.setPersonagem( personagem );
+		
+		Comentario novoComentario = comentarioDAO.save( comentario );
+		personagem.getComentarios().add( novoComentario  );
+		
+		personagemDAO.save( personagem );		
+	
 	}
 
 	@Override

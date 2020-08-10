@@ -3,13 +3,18 @@ package br.com.martines_dev.MyFandon.domain;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 public class Personagem   {
@@ -24,6 +29,20 @@ public class Personagem   {
 	private String historia;
 	private String ator;
 	
+	@JoinColumn(name = "anime_id")
+	@ManyToOne( fetch = FetchType.LAZY )
+	@JsonIgnore
+	private Anime anime;
+	
+	@OneToMany(
+			targetEntity = Comentario.class ,
+			cascade = CascadeType.REMOVE , 
+			mappedBy = "personagem",
+			fetch = FetchType.LAZY )
+	@JsonIgnore
+	private List<Comentario> comentarios;	
+	
+
 	public Personagem() {
 		
 	}
@@ -42,8 +61,19 @@ public class Personagem   {
 	}
 
 
-	@OneToMany(targetEntity = Comentario.class , fetch = FetchType.EAGER)
-	private List<Comentario> comentarios;
+
+	
+
+	public Anime getAnime() {
+		return anime;
+	}
+
+
+	public void setAnime(Anime anime) {
+		this.anime = anime;
+	}
+
+
 	
 	public Long getId() {
 		return id;
@@ -94,6 +124,8 @@ public class Personagem   {
 		
 		this.comentarios = comentarios;
 	}
+	
+
 
 	
 }

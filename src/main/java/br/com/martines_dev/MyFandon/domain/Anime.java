@@ -12,6 +12,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 
@@ -34,25 +35,30 @@ public class Anime {//implements Commentable
 	
 	private String genero;		
 	
-	@ManyToMany( 
-		targetEntity = Usuario.class )
-	@Column( nullable = false)
-	private List<Usuario> admin;
 	
-	@ManyToMany( targetEntity = Categoria.class  )
+	@ManyToMany( targetEntity = Usuario.class ,fetch = FetchType.LAZY )
+	@Column( nullable = false)
+	@NotNull
+	private List<Usuario> admin;
+		
+	
+	@ManyToMany( targetEntity = Categoria.class ,fetch = FetchType.LAZY )
 	private List<Categoria> categorias;
 	
 	
-	@OneToMany ( 
-		targetEntity = Comentario.class,
-		fetch = FetchType.LAZY ,
-		cascade  = CascadeType.REMOVE )
-	private List<Comentario> comentarios;	// por enquanto é nullable
+	@OneToMany ( targetEntity = Comentario.class  , 
+						cascade = CascadeType.REMOVE, 
+						mappedBy = "anime" , 
+						orphanRemoval = true,
+						fetch = FetchType.LAZY) 
+	private List<Comentario> comentarios;	
+		
 	
-	@OneToMany ( 
-		targetEntity = Personagem.class ,
-		fetch = FetchType.LAZY , 
-		cascade = CascadeType.ALL  )
+	@OneToMany ( targetEntity = Personagem.class, 
+						cascade = CascadeType.REMOVE, 
+						mappedBy = "anime"  ,
+						orphanRemoval = true,
+						fetch = FetchType.LAZY)
 	private List<Personagem> personagems;
 	
 	

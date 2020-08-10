@@ -8,13 +8,25 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class ControllerDeExceptions  {
-
+	
 	@ExceptionHandler(RecursoNaoEncontrado.class)
 	@ResponseStatus( HttpStatus.NOT_FOUND )
 	public String erro404( RecursoNaoEncontrado erro404 ) {
 		return erro404.getMessage();
 	}
 	
+	@ExceptionHandler(ExceptionOAnimeTemOAdminInvalido.class)
+	@ResponseStatus( HttpStatus.BAD_REQUEST )
+	public String erroNaoExisteAdmin( ExceptionOAnimeTemOAdminInvalido errorAdmin  ) {
+		return errorAdmin.getMessage();
+	}
+	
+	
+	@ExceptionHandler(ExceptionORecursoTemOAdminInvalido.class)
+	@ResponseStatus( HttpStatus.BAD_REQUEST )
+	public String erroNaoExisteAdminGeral( ExceptionORecursoTemOAdminInvalido errorAdmin  ) {
+		return errorAdmin.getMessage();
+	}
 	
 	@ExceptionHandler(RecursoJaExiste.class)
 	@ResponseStatus( HttpStatus.CONFLICT )
