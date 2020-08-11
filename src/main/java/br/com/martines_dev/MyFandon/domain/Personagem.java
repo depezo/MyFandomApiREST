@@ -14,8 +14,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 @Entity
 public class Personagem   {
 
@@ -30,16 +28,18 @@ public class Personagem   {
 	private String ator;
 	
 	@JoinColumn(name = "anime_id")
-	@ManyToOne( fetch = FetchType.LAZY )
-	@JsonIgnore
+	@ManyToOne( fetch = FetchType.LAZY  )
+	 
 	private Anime anime;
+	
 	
 	@OneToMany(
 			targetEntity = Comentario.class ,
 			cascade = CascadeType.REMOVE , 
 			mappedBy = "personagem",
 			fetch = FetchType.LAZY )
-	@JsonIgnore
+	
+	
 	private List<Comentario> comentarios;	
 	
 

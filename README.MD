@@ -87,3 +87,6 @@ http://app-route/{versionNumber}:port/{controller}/method/PathParam?QueryParam=x
 
 ### Documento
 https://docs.google.com/document/d/1TZDFx-bWBkMlElQt3W_nvpirw5wImVCt03tRZPkDZXE/edit?usp=sharing
+
+### Bugs e aprendizados
+Resolver o bug do relacionamento de resposta infinita: https://www.baeldung.com/jackson-bidirectional-relationships-and-infinite-recursion

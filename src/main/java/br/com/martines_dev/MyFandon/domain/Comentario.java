@@ -24,9 +24,13 @@ public class Comentario {
 	@ManyToOne(fetch = FetchType.EAGER)
 	private Usuario usuario;
 	
+	
+	
 	@JoinColumn( name="personagem_id" , nullable = true)
 	@ManyToOne(fetch = FetchType.EAGER)
 	private Personagem personagem;
+	
+
 	
 	@JoinColumn( name="anime_id" , nullable = true )
 	@ManyToOne(fetch = FetchType.LAZY)

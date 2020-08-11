@@ -14,10 +14,9 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
-@JsonAutoDetect
 public class Anime {//implements Commentable 
 
 	@Id()
@@ -50,15 +49,16 @@ public class Anime {//implements Commentable
 						cascade = CascadeType.REMOVE, 
 						mappedBy = "anime" , 
 						orphanRemoval = true,
-						fetch = FetchType.LAZY) 
+						fetch = FetchType.EAGER) 
 	private List<Comentario> comentarios;	
-		
+    
 	
 	@OneToMany ( targetEntity = Personagem.class, 
 						cascade = CascadeType.REMOVE, 
 						mappedBy = "anime"  ,
 						orphanRemoval = true,
 						fetch = FetchType.LAZY)
+	@JsonBackReference
 	private List<Personagem> personagems;
 	
 	

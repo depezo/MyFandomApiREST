@@ -3,6 +3,7 @@ package br.com.martines_dev.MyFandon.service;
 import java.util.List;
 import java.util.Optional;
 
+import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -107,6 +108,7 @@ public class PersonagemService implements PersonagemServiceInterface {
 	}
 	
 	@Override
+	@Transactional
 	public Page<Personagem> buscar( Pageable pageable , String nomePersonagem) {
 
 		return personagemDAO.findByNomeContainingIgnoreCase(pageable,nomePersonagem);
