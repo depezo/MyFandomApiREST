@@ -1,5 +1,7 @@
 package br.com.martines_dev.MyFandon.domain;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -12,7 +14,10 @@ import javax.persistence.ManyToOne;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-public class Comentario {
+public class Comentario implements Serializable  {
+
+
+	private static final long serialVersionUID = 227920418182640486L;
 
 	@Id
 	@GeneratedValue (strategy = GenerationType.IDENTITY)
@@ -27,7 +32,8 @@ public class Comentario {
 	
 	
 	@JoinColumn( name="personagem_id" , nullable = true)
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JsonIgnore
 	private Personagem personagem;
 	
 

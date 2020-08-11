@@ -44,6 +44,7 @@ public class PersonagemService implements PersonagemServiceInterface {
 	}
 	
 	@Override
+	@Transactional
 	public Personagem inserir(Personagem personagem, Long animeId) {
 		
 		Personagem novoPersonagem = inserir(personagem);
@@ -52,7 +53,7 @@ public class PersonagemService implements PersonagemServiceInterface {
 		if( anime.isPresent() ) {
 			
 			anime.get().getPersonagems().add(personagem);
-
+			novoPersonagem.setAnime( anime.get() );
 			animeDAO.save( anime.get() );			
 		}else {
 			throw new RecursoNaoEncontrado("Não é possivel adicionar um personagem ao anime que não existe");
@@ -74,6 +75,7 @@ public class PersonagemService implements PersonagemServiceInterface {
 	}
 
 	@Override
+ 
 	public Personagem pegarUm(Long id) {
 		
 		

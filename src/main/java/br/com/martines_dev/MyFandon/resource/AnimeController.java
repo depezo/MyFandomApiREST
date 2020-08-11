@@ -1,6 +1,7 @@
 package br.com.martines_dev.MyFandon.resource;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,7 +84,19 @@ public class AnimeController {
 		return animeService.pegarUm( id );
 	}
 	
-	
+	@GetMapping("api/anime/{id}/personagem")
+	public List<Personagem> verOsPersonagensDoAnime( @PathVariable("id") Long id ) {
+		
+		Anime anime = animeService.pegarUm( id );
+		List<Personagem> personagens = new ArrayList<Personagem>();
+		personagens = anime.getPersonagems();
+
+		for( Personagem p : personagens) {
+			p.setAnime(null);
+		}
+		
+		return personagens;
+	}
 	@GetMapping("api/anime/{id}/categorias")
 	public List<Categoria> listarCategoriasDeUmAnime( 
 					@PathVariable("id") Long id )  {

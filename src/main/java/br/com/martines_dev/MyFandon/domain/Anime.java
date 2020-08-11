@@ -1,5 +1,6 @@
 package br.com.martines_dev.MyFandon.domain;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,9 +16,13 @@ import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
-public class Anime {//implements Commentable 
+public class Anime implements Serializable{//implements Commentable 
+
+
+	private static final long serialVersionUID = 2080314245740381830L;
 
 	@Id()
 	@GeneratedValue(strategy = GenerationType.IDENTITY )
@@ -58,7 +63,7 @@ public class Anime {//implements Commentable
 						mappedBy = "anime"  ,
 						orphanRemoval = true,
 						fetch = FetchType.LAZY)
-	@JsonBackReference
+	@JsonBackReference 
 	private List<Personagem> personagems;
 	
 	

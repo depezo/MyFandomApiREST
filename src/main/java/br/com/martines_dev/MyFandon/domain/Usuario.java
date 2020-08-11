@@ -1,5 +1,7 @@
 package br.com.martines_dev.MyFandon.domain;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -10,8 +12,11 @@ import javax.validation.constraints.NotNull;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-public class Usuario {
+public class Usuario implements Serializable  {
 	
+
+	private static final long serialVersionUID = -6042416471106610831L;
+
 	@Id
 	@GeneratedValue (strategy = GenerationType.IDENTITY)	
 	private Long id;

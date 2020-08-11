@@ -50,6 +50,7 @@ public class PersonagemController extends CrudController<Personagem,Long>{
 	}
 
 	@GetMapping("api/personagem/{id}")
+	
 	public Personagem pegarUm( 
 					@PathVariable("id") Long id) {
 		

@@ -1,5 +1,6 @@
 package br.com.martines_dev.MyFandon.domain;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,9 +15,16 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
-@Entity
-public class Personagem   {
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
+@Entity
+public class Personagem  implements Serializable {
+
+
+	private static final long serialVersionUID = 2450201208426812774L;
 	@Id()
 	@GeneratedValue(strategy = GenerationType.IDENTITY )
 	private Long id;
@@ -28,8 +36,9 @@ public class Personagem   {
 	private String ator;
 	
 	@JoinColumn(name = "anime_id")
-	@ManyToOne( fetch = FetchType.LAZY  )
-	 
+	@ManyToOne( fetch = FetchType.EAGER  )
+	//@JsonIgnore
+	@JsonIgnoreProperties
 	private Anime anime;
 	
 	
@@ -39,7 +48,7 @@ public class Personagem   {
 			mappedBy = "personagem",
 			fetch = FetchType.LAZY )
 	
-	
+	@JsonBackReference 
 	private List<Comentario> comentarios;	
 	
 
