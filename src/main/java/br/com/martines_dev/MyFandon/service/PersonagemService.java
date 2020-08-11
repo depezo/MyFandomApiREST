@@ -105,7 +105,13 @@ public class PersonagemService implements PersonagemServiceInterface {
 		Pageable pageable = PageRequest.of( page , QTD_PERSONAGEM_PER_PAGE );
 		return personagemDAO.findAll( pageable );
 	}
+	
+	@Override
+	public Page<Personagem> buscar( Pageable pageable , String nomePersonagem) {
 
+		return personagemDAO.findByNomeContainingIgnoreCase(pageable,nomePersonagem);
+	}
+	
 	
 
 	@Override

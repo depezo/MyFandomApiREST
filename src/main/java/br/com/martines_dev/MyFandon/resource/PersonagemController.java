@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -68,6 +69,13 @@ public class PersonagemController extends CrudController<Personagem,Long>{
 		@RequestParam( name = "page" , defaultValue  = "0") int page) 
 	{
 		return personagemService.listar(page);
+	}
+	
+	@GetMapping("api/personagem/buscar")
+	public Page<Personagem> buscar( Pageable pageable,
+									@RequestParam(name = "q" , value="") String nomePersonagem ) 
+	{
+		return personagemService.buscar(pageable,nomePersonagem);
 	}
 	
 	@PostMapping("api/personagem/{id}/registrarComentario")

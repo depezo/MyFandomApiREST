@@ -158,13 +158,25 @@ public class AnimeService implements AnimeServiceInterface{
 			throw new RecursoNaoEncontrado("Anime nao existe: "+id);
 		}
 	}
+	
+	
+	@Override
+	public Page<Anime> buscar( Pageable pageable , String nomeAnime) {
 
+		return animeDAO.findByNomeContainingIgnoreCase(pageable,nomeAnime);
+	}
+	
 	@Override
 	public List<Anime> listar() {
 		
 		return animeDAO.findAll();
 	}
 
+	@Override
+	public Page<Anime> listar(Pageable pageable) {
+		
+		return animeDAO.findAll(pageable);
+	}
 	@Override
 	public Page<Anime> listar(int page ) {
 		
@@ -248,6 +260,9 @@ public class AnimeService implements AnimeServiceInterface{
 		
 		return animeFounded.getCategorias();
 	}
+
+
+
 
 
 	

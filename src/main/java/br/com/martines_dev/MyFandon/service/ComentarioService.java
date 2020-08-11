@@ -54,7 +54,7 @@ public class ComentarioService implements ComentarioServicoInterface{
 	 */
 	@Override
 	public Comentario atualizar(Comentario comentario , Long id ) {
-		Usuario usuario = usuarioDAO.findByUsername( comentario.getUsuario().getName() )
+		usuarioDAO.findByUsername( comentario.getUsuario().getName() )
 				.orElseThrow( ( ) -> new RecursoNaoEncontrado("Usuario não existe") );
 		
 		return comentarioDAO.save( comentario );
