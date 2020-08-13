@@ -1,15 +1,19 @@
 package br.com.martines_dev.MyFandon.resource;
 
+import java.lang.reflect.Field;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.util.ReflectionUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -75,6 +79,39 @@ public class AnimeController {
 		}
 		
 		return animeService.atualizar( anime , principal.getName() );
+	}
+	
+	@PatchMapping("api/anime/{id}")
+	public Anime atualizarAvancado
+				( @PathVariable("id") Long anime_id , 
+				  @RequestBody Map<Object , Object > animeParameters , 
+				  Principal principal ) 
+	{
+		
+		Anime anime = animeService.pegarUm(anime_id) ;
+		
+		animeParameters.forEach( (nameField , valueField) -> {
+			
+			if( !isIdField(nameField))
+			{
+				Field field = ReflectionUtils.findRequiredField( Anime.class , (String) nameField );							
+				System.out.println(field);
+				System.out.println( valueField );
+				
+				field.setAccessible(true);
+				ReflectionUtils.setField(field, anime , valueField );
+				
+				field.setAccessible(false);
+			}
+			
+		});
+		
+		return animeService.atualizar( anime , principal.getName() );
+	}
+
+
+	private boolean isIdField(Object k) {
+		return ( (String) k).equals("id");
 	}
 	
 	
