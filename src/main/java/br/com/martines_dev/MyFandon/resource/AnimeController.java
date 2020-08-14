@@ -1,15 +1,13 @@
 package br.com.martines_dev.MyFandon.resource;
 
-import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.util.ReflectionUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,8 +24,11 @@ import br.com.martines_dev.MyFandon.domain.Anime;
 import br.com.martines_dev.MyFandon.domain.Categoria;
 import br.com.martines_dev.MyFandon.domain.Comentario;
 import br.com.martines_dev.MyFandon.domain.Personagem;
+import br.com.martines_dev.MyFandon.dto.AnimeDTO;
 import br.com.martines_dev.MyFandon.exceptions.IdNaoConfereException;
 import br.com.martines_dev.MyFandon.service.interfaces.AnimeServiceInterface;
+import br.com.martines_dev.MyFandon.util.LongIdUtil;
+import br.com.martines_dev.MyFandon.util.NullAwareBeanUtils;
 
 @RestController
 public class AnimeController {
@@ -36,6 +37,10 @@ public class AnimeController {
 	@Autowired
 	private AnimeServiceInterface animeService;
 
+	@Autowired
+	private NullAwareBeanUtils copyUtils;
+	
+	
 	@GetMapping("api/anime/buscar")
 	public Page<Anime> buscar( Pageable pageable,
 								@RequestParam(name = "q" , value="") String nomeAnime ) 
@@ -81,40 +86,25 @@ public class AnimeController {
 		return animeService.atualizar( anime , principal.getName() );
 	}
 	
+
 	@PatchMapping("api/anime/{id}")
 	public Anime atualizarAvancado
-				( @PathVariable("id") Long anime_id , 
-				  @RequestBody Map<Object , Object > animeParameters , 
-				  Principal principal ) 
+				( @PathVariable("id") Long animeId , 
+				  @RequestBody AnimeDTO animeParameters , 
+				  Principal principal	 ) 
+				  throws IllegalAccessException, InvocationTargetException 
 	{
 		
-		Anime anime = animeService.pegarUm(anime_id) ;
+		Anime anime = animeService.pegarUm(animeId) ;
 		
-		animeParameters.forEach( (nameField , valueField) -> {
-			
-			if( !isIdField(nameField))
-			{
-				Field field = ReflectionUtils.findRequiredField( Anime.class , (String) nameField );							
-				System.out.println(field);
-				System.out.println( valueField );
-				
-				field.setAccessible(true);
-				ReflectionUtils.setField(field, anime , valueField );
-				
-				field.setAccessible(false);
-			}
-			
-		});
+		LongIdUtil.validateId(animeParameters.getId(), animeId);
+		copyUtils.copyProperties( anime , animeParameters);
+		
 		
 		return animeService.atualizar( anime , principal.getName() );
 	}
 
 
-	private boolean isIdField(Object k) {
-		return ( (String) k).equals("id");
-	}
-	
-	
 	@GetMapping("api/anime/{id}")
 	public Anime verUm( @PathVariable("id") Long id ) {
 		
@@ -173,6 +163,18 @@ public class AnimeController {
 	{
 		return animeService.pegarUm(id).getComentarios();
 	}
+	
+//	private AnimeDTO convertToDTO(Anime anime) {
+//		AnimeDTO animeDTO = mapper.map(anime, AnimeDTO.class);
+//		return animeDTO;
+//	}
+//	private Anime convertFromDTO(AnimeDTO animeDTO) {
+//		Anime anime = mapper.map( animeDTO, Anime.class );
+//		return anime;
+//	}
+//	
+//	
+	
 	
 	
 	

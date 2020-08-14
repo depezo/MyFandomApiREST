@@ -1,5 +1,7 @@
 package br.com.martines_dev.MyFandon.exceptions;
 
+import javax.persistence.EntityNotFoundException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -21,6 +23,13 @@ public class ControllerDeExceptions  {
 		return errorAdmin.getMessage();
 	}
 	
+	
+	@ExceptionHandler( EntityNotFoundException.class )
+	@ResponseStatus( HttpStatus.NOT_FOUND)
+	public String erroItemNaoExiste() {
+		
+		return "Algum item que você quer modificar não foi encontrado na base de dados, portanto é impossivel de modificar o item!";
+	}
 	
 	@ExceptionHandler(ExceptionORecursoTemOAdminInvalido.class)
 	@ResponseStatus( HttpStatus.BAD_REQUEST )

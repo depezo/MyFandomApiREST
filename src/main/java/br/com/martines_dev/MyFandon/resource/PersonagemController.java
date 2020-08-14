@@ -1,14 +1,12 @@
 package br.com.martines_dev.MyFandon.resource;
 
-import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.security.Principal;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.util.ReflectionUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,11 +21,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sun.istack.NotNull;
 
-import br.com.martines_dev.MyFandon.domain.Personagem;
 import br.com.martines_dev.MyFandon.domain.Comentario;
 import br.com.martines_dev.MyFandon.domain.Personagem;
 import br.com.martines_dev.MyFandon.resource.interfaces.CrudController;
 import br.com.martines_dev.MyFandon.service.interfaces.PersonagemServiceInterface;
+import br.com.martines_dev.MyFandon.util.LongIdUtil;
+import br.com.martines_dev.MyFandon.util.NullAwareBeanUtils;
 
 @RestController
 public class PersonagemController extends CrudController<Personagem, Long> {
@@ -35,6 +34,10 @@ public class PersonagemController extends CrudController<Personagem, Long> {
 	@Autowired
 	PersonagemServiceInterface personagemService;
 
+	
+	@Autowired
+	private NullAwareBeanUtils copyUtils;
+	
 	@PostMapping("api/personagem/{id}")
 	@ResponseStatus(code = HttpStatus.CREATED)
 	public Personagem inserir(@RequestBody Personagem personagem, @PathVariable("id") Long idAnime) {
@@ -42,41 +45,34 @@ public class PersonagemController extends CrudController<Personagem, Long> {
 		return personagemService.inserir(personagem, idAnime);
 	}
 
+	
+	
 	@PutMapping("api/personagem/{id}")
 	public Personagem atualizar(@RequestBody Personagem personagem, @PathVariable("id") Long idAnime) {
 		return personagemService.atualizar(personagem, idAnime);
 	}
+	
+	
+
+	
 	@PatchMapping("api/personagem/{id}")
 	public Personagem atualizarAvancado(
 					@PathVariable("id") Long personagemID, 
-					@RequestBody Map<Object, Object> animeParameters,
-					Principal principal) 
+					@RequestBody Personagem personagemParameters,
+					Principal principal)
+					throws IllegalAccessException, InvocationTargetException 
 	{
-
+		
 		Personagem personagem = personagemService.pegarUm(personagemID);
 
-		animeParameters.forEach((nameField, valueField) -> {
-
-			if (!isIdField(nameField)) {
-				Field field = ReflectionUtils.findRequiredField(Personagem.class, (String) nameField);
-				System.out.println(field);
-				System.out.println(valueField);
-
-				field.setAccessible(true);
-				ReflectionUtils.setField(field, personagem, valueField);
-
-				field.setAccessible(false);
-			}
-
-		});
-
+		
+		LongIdUtil.validateId(personagem.getId(), personagemID);
+		copyUtils.copyProperties( personagem , personagemParameters);
+		
 		return personagemService.atualizar(personagem, personagemID );
-	}
-	
-	private boolean isIdField(Object k) {
-		return ( (String) k).equals("id");
-	}
+	}	
 
+	
 	@GetMapping("api/personagem/{id}")
 
 	public Personagem pegarUm(@PathVariable("id") Long id) {
