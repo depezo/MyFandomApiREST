@@ -29,6 +29,14 @@ import br.com.martines_dev.MyFandon.exceptions.IdNaoConfereException;
 import br.com.martines_dev.MyFandon.service.interfaces.AnimeServiceInterface;
 import br.com.martines_dev.MyFandon.util.LongIdUtil;
 import br.com.martines_dev.MyFandon.util.NullAwareBeanUtils;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.Authorization;
+import org.springframework.data.web.PageableDefault;
 
 @RestController
 public class AnimeController {
@@ -42,41 +50,104 @@ public class AnimeController {
 	
 	
 	@GetMapping("api/anime/buscar")
-	public Page<Anime> buscar( Pageable pageable,
-								@RequestParam(name = "q" , value="") String nomeAnime ) 
+	@ApiOperation( 
+                value = "Buscar Personagem",
+                notes = "Para buscar algo prencha o campo q, e uma listagem de personagens"
+                        + " será retornada!"
+        )
+	public Page<Anime> buscar( 
+                
+                @PageableDefault( size = 10 )
+                Pageable pageable,
+                @RequestParam(name = "q" , value="") String nomeAnime ) 
 	{
 		
 		return animeService.buscar( pageable, nomeAnime);
 	}
 	
 	
+        
 	@GetMapping("api/anime")
-	public Page<Anime> listar( Pageable pageable )  {
+	public Page<Anime> listar( 
+                
+                @PageableDefault( size = 10 )
+                Pageable pageable )  
+        {
 		
+            
 		return animeService.listar( pageable );
 	}
+        
+        
 	
 	@DeleteMapping("api/anime/{id}")
-	public void deletar( @PathVariable("id") Long id , Principal principal) 
+	@ApiOperation(
+            value = "Deletar um anime"	, 
+            authorizations = {@Authorization(value="basicAuth")} ,  
+            notes = 
+                   "Para deletar um anime basta estar autenticado e ser o dono do anime!"
+        )
+        
+	@ApiResponses( 
+        @ApiResponse( code = 404 ,message = "Recurso Não Encontrado") )
+	public void deletar( 
+                @PathVariable("id") Long id , 
+                @ApiParam(hidden=true) Principal principal) 
 	{
 		animeService.deletar( id , principal.getName() );
 	}
 	
 	
-	@PostMapping("api/anime")
+        @ApiOperation(
+            value = "Inserir um anime"	, 
+            authorizations = {@Authorization(value="basicAuth")} ,  
+            notes = 
+                   "Para inserir um anime basta que não exista outro com o mesmo nome!"
+        )
+        @ApiImplicitParams({
+            @ApiImplicitParam(
+                name = "anime",
+                value = "Esse é o minimo necessario para conseguir inserir um anime!",
+                required = true,
+                dataType = "String",
+                paramType = "body",
+                example = "{\n \"nome\": \"Naruto\", \n "
+                        + "\"resumo\": \"Anime sobre um garoto orfão que quer ser hokage\",\n "
+                        + "\"genero\": \"Aventura e Luta\", \n "
+                        + "\"descricao\": \"É um anime sobre ninjas\", \n "
+                        + "\"autorDaObra\": \"Araki\", \"genero\": \"ação e aventura\" \n}" 
+            )
+        } )
+        
+        @PostMapping("api/anime")
 	@ResponseStatus(HttpStatus.CREATED)
-	public Anime inserir( @RequestBody Anime anime , Principal principal) {
+        public Anime inserir( 
+            @RequestBody Anime anime , 
+            @ApiParam(hidden=true) Principal principal) {
 		
 		System.out.println(principal.getName());	
 		return animeService.inserir( anime , principal.getName() );
 	}
 	
 	
-	@PutMapping("api/anime/{id}")
-	public Anime atualizar
-				( @PathVariable("id") Long anime_id , 
-				  @RequestBody Anime anime , 
-				  Principal principal ) 
+        
+        
+        
+        
+	@ApiOperation(
+            value = "Atualizar um Anime",
+            notes = "Para atualizar um anime é necessario além de estar autenticado, "
+                    + " passar o id pela rota e o objeto anime com o id, é fortemente "
+                    + "recomendado utilizar a rota patch para atualizar apenas elementos necessários !" ,
+            authorizations = {@Authorization(value="basicAuth")}
+			
+	)
+        
+        @PutMapping("api/anime/{id}")
+	public Anime atualizar	(
+            @PathVariable("id") Long anime_id , 
+            @RequestBody Anime anime , 
+            @ApiParam(hidden=true)Principal principal ) 
 	{
 		
  		if( !anime.getId().equals(anime_id)) {
@@ -86,13 +157,25 @@ public class AnimeController {
 		return animeService.atualizar( anime , principal.getName() );
 	}
 	
-
+        
+        
+        
+        
+       
+	@ApiOperation(
+            value = "Atualizar um anime",
+            notes = "É possivel atualizar os campos do anime individualmente, desde que seja passado por parametro\n"
+                            + "o ID do anime, e caso no corpo da requisição o id também seja passado, o id do corpo deverá\n"
+                            + "ser igual o id do parametro na url!",
+            authorizations = {@Authorization(value="basicAuth")}
+	)
+        
 	@PatchMapping("api/anime/{id}")
-	public Anime atualizarAvancado
-				( @PathVariable("id") Long animeId , 
-				  @RequestBody AnimeDTO animeParameters , 
-				  Principal principal	 ) 
-				  throws IllegalAccessException, InvocationTargetException 
+	public Anime atualizarAvancado    ( 
+              @PathVariable("id") Long animeId , 
+              @RequestBody AnimeDTO animeParameters , 
+              @ApiParam( name = "name", hidden=true)   Principal principal	
+        ) throws IllegalAccessException, InvocationTargetException 
 	{
 		
 		Anime anime = animeService.pegarUm(animeId) ;
@@ -104,13 +187,29 @@ public class AnimeController {
 		return animeService.atualizar( anime , principal.getName() );
 	}
 
+                                
+                                
+                                
+                                
 
+	@ApiOperation(
+            value = "Ver dados de um anime"
+	)
+        
 	@GetMapping("api/anime/{id}")
 	public Anime verUm( @PathVariable("id") Long id ) {
 		
 		return animeService.pegarUm( id );
 	}
 	
+        
+        
+        
+	
+	@ApiOperation(
+            value = "Listar os personagens de um anime"
+	)
+        
 	@GetMapping("api/anime/{id}/personagem")
 	public List<Personagem> verOsPersonagensDoAnime( @PathVariable("id") Long id ) {
 		
@@ -124,56 +223,96 @@ public class AnimeController {
 		
 		return personagens;
 	}
+	
+	@ApiOperation(
+			value = "Listar as categorias de um anime",
+			authorizations = {@Authorization(value="basicAuth")}
+	)
 	@GetMapping("api/anime/{id}/categorias")
-	public List<Categoria> listarCategoriasDeUmAnime( 
-					@PathVariable("id") Long id )  {
+	public List<Categoria> listarCategoriasDeUmAnime( @PathVariable("id") Long id )  {
 		
 		return animeService.getCategorias ( id );
 	}
 	
 	
-
-		
-
-	@PostMapping("api/anime/{id}/registrarPersonagem")
+        
+        
+        
+        
+	@ApiOperation(
+		value = "Registrar um persnoagem no anime",
+		authorizations = {@Authorization(value="basicAuth")}
+	)        
+        @ApiImplicitParams({
+            @ApiImplicitParam(
+                name = "anime",
+                value = "Esse é o minimo necessario para conseguir inserir um personagem em um anime!",
+                required = true,
+                dataType = "String",
+                paramType = "body",
+                example = "{\n \"nome\": \"Naruto\", \n "
+                        + "\"idade\": \"20\",\n "
+                        + "\"historia\": \"Era uma vez...\", \n "
+                        + "\"descricao\": \"É um anime sobre ninjas\", \n "
+                        + "\"ator\": \"Araki\", \"genero\": \"ação e aventura\" \n}" 
+            )
+        } )
+        
+        @PostMapping("api/anime/{id}/registrarPersonagem")
 	@ResponseStatus(HttpStatus.CREATED)
 	public void registrarPersonagem( 
-					@PathVariable("id") Long id,  
-					@RequestBody Personagem personagem ) 
+            @PathVariable("id") Long id,  
+            @RequestBody Personagem personagem ) 
 	{
 		animeService.addPersonagem( id , personagem ) ;
 	}
 	
+        
+        
+        
 	
-	@PostMapping("api/anime/{id}/registrarComentario")
+	@ApiOperation(
+		value = "Registrar um comentario no anime",
+                notes = "Para registrar um comentario é necessario estar logado! E só quem"
+                        + " criou o comentario pode modificar ou deletar ele!",
+		authorizations = {@Authorization(value="basicAuth")}
+	)
+        @ApiImplicitParams({
+            @ApiImplicitParam(
+                name = "comentario",
+                value = "Para inserir um comentario!",
+                required = true,
+                dataType = "String",
+                paramType = "body",
+                example = "{\n \"mensagem\": \"Esse anime é legal! \", \n }" 
+            )
+        } )
+        
+	@PostMapping("api/anime/{anime_id}/registrarComentario")
 	@ResponseStatus(HttpStatus.CREATED)
 	public Comentario registrarComentario( 
-					@PathVariable("id") Long id,  
-					@RequestBody Comentario comentario , 
-					Principal principal ) 
+            @PathVariable("anime_id") Long anime_id,  
+            @RequestBody Comentario comentario , 
+            Principal principal ) 
 	{
 			
-		return animeService.addComentario( id , comentario , principal.getName()) ;
+		return animeService.addComentario( anime_id , comentario , principal.getName()) ;
 	}
 
-	
-	@GetMapping("api/anime/{id}/comentarios")
+        
+        
+        
+	@ApiOperation(
+            value = "Listar comentarios de um anime",
+            notes = "Listar comentarios de um anime"
+	)
+        
+	@GetMapping("api/anime/{anime_id}/comentarios")
 	public List<Comentario> pegarComentarios(
-						@PathVariable("id") Long id ) 
+		@PathVariable("anime_id") Long anime_id ) 
 	{
-		return animeService.pegarUm(id).getComentarios();
+		return animeService.pegarUm(anime_id).getComentarios();
 	}
-	
-//	private AnimeDTO convertToDTO(Anime anime) {
-//		AnimeDTO animeDTO = mapper.map(anime, AnimeDTO.class);
-//		return animeDTO;
-//	}
-//	private Anime convertFromDTO(AnimeDTO animeDTO) {
-//		Anime anime = mapper.map( animeDTO, Anime.class );
-//		return anime;
-//	}
-//	
-//	
 	
 	
 	

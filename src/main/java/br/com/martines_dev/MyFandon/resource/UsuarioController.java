@@ -11,9 +11,14 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.martines_dev.MyFandon.UsuarioDTO;
 import br.com.martines_dev.MyFandon.domain.Usuario;
+import br.com.martines_dev.MyFandon.dto.UsuarioDTO;
 import br.com.martines_dev.MyFandon.service.interfaces.UsuarioServiceInterface;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.Authorization;
 
 @RestController
 public class UsuarioController {
@@ -21,9 +26,28 @@ public class UsuarioController {
 	@Autowired
 	UsuarioServiceInterface usuarioService;
 	
+        
+        
+        @ApiOperation(
+                value = "Cadastrar-se na Fandom!"
+	)
+        @ApiImplicitParams({
+            @ApiImplicitParam(
+                name = "novoUsuario",
+                value = "Cadastrar-se na plataforma",
+                required = true,
+                dataType = "String",
+                paramType = "body",
+                example = "{\n \"nomeCompleto\": \"Maria Antonieta\" ,"
+                        + "\n \"nomeUsuario\": \"mariazinha\" "
+                        + "\n \"senha\": \"minhaSenha\" "
+                        + " \n}" 
+            )
+        } )
+        
 	@PostMapping("/api/usuario")
 	public Usuario cadastrarUsuario( 
-						@Valid @RequestBody UsuarioDTO novoUsuario ) 
+                @Valid @RequestBody UsuarioDTO novoUsuario ) 
 	{
 		
 		Usuario _novoUsuario = mapDoUsuarioDTOparaUsuario(novoUsuario);
@@ -31,11 +55,18 @@ public class UsuarioController {
 		return usuarioService.cadastrarUsuario( _novoUsuario );
 	}
 
+        
+        @ApiOperation(
+                value = "Atualizar o Usuario!",
+		notes = "Atualizar os dados do usuario, somente o usuairo pode atualizar "
+                        + "seus dados!",
+                authorizations = {@Authorization(value="basicAuth")}
+	)
 	@PutMapping("/api/usuario/{id}")
 	public Usuario atualizar( 
-						@Valid @RequestBody UsuarioDTO usuario ,
-						@PathVariable("id") Long usuarioId ,
-						Principal principal ) 
+                @Valid @RequestBody UsuarioDTO usuario ,
+                @PathVariable("id") Long usuarioId ,
+                @ApiParam(hidden=true) Principal principal ) 
 	{
 		
 		Usuario _usuario = mapDoUsuarioDTOparaUsuario(usuario);

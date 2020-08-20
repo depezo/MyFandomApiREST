@@ -13,6 +13,6 @@ public class HomeController {
 	RedirectView redirectToSwagger( HttpServletRequest request ) {
 		
 		
-		return new RedirectView( request.getContextPath() + "/swagger-ui.html");
+		return new RedirectView( request.getContextPath() + "/swagger-ui/");
 	}
 }

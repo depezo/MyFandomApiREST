@@ -1,4 +1,4 @@
-package br.com.martines_dev.MyFandon;
+package br.com.martines_dev.MyFandon.dto;
 
 import javax.validation.constraints.NotNull;
 
